@@ -27,7 +27,7 @@ The directiory for experiment is located in `exp`.
 
 Default config is located in `vocoders/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.  
 Current system supports single-speaker or universal vocoder, and it is assumed that the audio files to be used are placed in the `wav_dir`.   
-Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz.
+Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.
 
 Then run the preprocess script
 
