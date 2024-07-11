@@ -26,6 +26,7 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.parametrizations import weight_norm
 from torchaudio.transforms import Spectrogram
+from vocoders.layers.san import SANConv2d
 
 
 class DiscriminatorB(nn.Module):
@@ -41,6 +42,7 @@ class DiscriminatorB(nn.Module):
             (0.5, 0.75),
             (0.75, 1.0),
         ),
+        is_san=False,
     ):
         super().__init__()
         self.window_length = window_length
@@ -61,6 +63,12 @@ class DiscriminatorB(nn.Module):
         self.conv_post = weight_norm(
             nn.Conv2d(channels, 1, (3, 3), (1, 1), padding=(1, 1))
         )
+        if is_san:
+            self.conv_post = SANConv2d(channels, 1, (3, 3), (1, 1), padding=(1, 1))
+        else:
+            self.conv_post = weight_norm(
+                nn.Conv2d(channels, 1, (3, 3), (1, 1), padding=(1, 1))
+            )
 
     def _build_block(self, channels):
         return nn.ModuleList(
@@ -93,7 +101,7 @@ class DiscriminatorB(nn.Module):
         x_bands = [x[..., b[0] : b[1]] for b in self.bands]
         return x_bands
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor, is_san: bool = False):
         x_bands = self.spectrogram(x.squeeze(1))
         fmap = []
         x = []
@@ -107,30 +115,39 @@ class DiscriminatorB(nn.Module):
             x.append(band)
 
         x = torch.cat(x, dim=-1)
-        x = self.conv_post(x)
+        if is_san:
+            x = self.conv_post(x, is_san=is_san)
+        else:
+            x = self.conv_post(x)
+
+        if is_san:
+            x_fun, x_dir = x
+            fmap.append(x_fun)
+            x_fun = torch.flatten(x_fun, 1, -1)
+            x_dir = torch.flatten(x_dir, 1, -1)
+            x = [x_fun, x_dir]
+        else:
+            fmap.append(x)
+            x = torch.flatten(x, 1, -1)
         fmap.append(x)
 
         return x, fmap
 
 
 class MultiBandDiscriminator(nn.Module):
-    def __init__(
-        self,
-        h,
-    ):
+    def __init__(self, fft_sizes=[2048, 1024, 512], is_san=False):
         """
         Multi-band multi-scale STFT discriminator, with the architecture based on https://github.com/descriptinc/descript-audio-codec.
         and the modified code adapted from https://github.com/gemelo-ai/vocos.
         """
         super().__init__()
         # fft_sizes (list[int]): Tuple of window lengths for FFT. Defaults to [2048, 1024, 512] if not set in h.
-        self.fft_sizes = h.get("mbd_fft_sizes", [2048, 1024, 512])
         self.discriminators = nn.ModuleList(
-            [DiscriminatorB(window_length=w) for w in self.fft_sizes]
+            [DiscriminatorB(window_length=w, is_san=is_san) for w in fft_sizes]
         )
 
     def forward(
-        self, y, y_hat, **kwargs
+        self, y, y_hat, is_san=False
     ) -> Tuple[
         List[torch.Tensor],
         List[torch.Tensor],
@@ -143,8 +160,8 @@ class MultiBandDiscriminator(nn.Module):
         fmap_gs = []
 
         for d in self.discriminators:
-            y_d_r, fmap_r = d(x=y)
-            y_d_g, fmap_g = d(x=y_hat)
+            y_d_r, fmap_r = d(x=y, is_san=is_san)
+            y_d_g, fmap_g = d(x=y_hat, is_san=is_san)
             y_d_rs.append(y_d_r)
             fmap_rs.append(fmap_r)
             y_d_gs.append(y_d_g)

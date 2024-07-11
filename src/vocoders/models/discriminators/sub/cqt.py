@@ -28,6 +28,7 @@ import torch.nn as nn
 from nnAudio import features
 from torch.nn.utils.parametrizations import weight_norm
 from torchaudio.transforms import Resample
+from vocoders.layers.san import SANConv2d
 
 
 class DiscriminatorCQT(nn.Module):
@@ -44,6 +45,7 @@ class DiscriminatorCQT(nn.Module):
         bins_per_octave,
         sample_rate,
         cqtd_normalize_volume=False,
+        is_san=False,
     ):
         super().__init__()
 
@@ -127,14 +129,24 @@ class DiscriminatorCQT(nn.Module):
             )
         )
 
-        self.conv_post = weight_norm(
-            nn.Conv2d(
+        if is_san:
+            self.conv_post = SANConv2d(
                 out_chs,
                 self.out_channels,
                 kernel_size=(self.kernel_size[0], self.kernel_size[0]),
                 padding=self.get_2d_padding((self.kernel_size[0], self.kernel_size[0])),
             )
-        )
+        else:
+            self.conv_post = weight_norm(
+                nn.Conv2d(
+                    out_chs,
+                    self.out_channels,
+                    kernel_size=(self.kernel_size[0], self.kernel_size[0]),
+                    padding=self.get_2d_padding(
+                        (self.kernel_size[0], self.kernel_size[0])
+                    ),
+                )
+            )
 
         self.activation = torch.nn.LeakyReLU(negative_slope=0.1)
         self.resample = Resample(orig_freq=self.fs, new_freq=self.fs * 2)
@@ -151,7 +163,7 @@ class DiscriminatorCQT(nn.Module):
             ((kernel_size[1] - 1) * dilation[1]) // 2,
         )
 
-    def forward(self, x):
+    def forward(self, x, is_san=False):
         fmap = []
 
         if self.cqtd_normalize_volume:
@@ -190,7 +202,20 @@ class DiscriminatorCQT(nn.Module):
             latent_z = self.activation(latent_z)
             fmap.append(latent_z)
 
-        latent_z = self.conv_post(latent_z)
+        if is_san:
+            x = self.conv_post(latent_z, is_san=is_san)
+        else:
+            x = self.conv_post(latent_z)
+
+        if is_san:
+            x_fun, x_dir = x
+            fmap.append(x_fun)
+            x_fun = torch.flatten(x_fun, 1, -1)
+            x_dir = torch.flatten(x_dir, 1, -1)
+            latent_z = [x_fun, x_dir]
+        else:
+            fmap.append(x)
+            latent_z = torch.flatten(x, 1, -1)
 
         return latent_z, fmap
 
@@ -208,6 +233,7 @@ class MultiScaleSubbandCQTDiscriminator(nn.Module):
         n_octaves=[9, 9, 9],
         bins_per_octaves=[24, 36, 48],
         sample_rate=24000,
+        is_san=False,
     ):
         super().__init__()
 
@@ -224,13 +250,14 @@ class MultiScaleSubbandCQTDiscriminator(nn.Module):
                     n_octaves=n_octaves[i],
                     sample_rate=sample_rate,
                     bins_per_octave=bins_per_octaves[i],
+                    is_san=is_san,
                 )
                 for i in range(len(hop_lengths))
             ]
         )
 
     def forward(
-        self, y, y_hat, **kwargs
+        self, y, y_hat, is_san=False
     ) -> Tuple[
         List[torch.Tensor],
         List[torch.Tensor],
@@ -243,8 +270,8 @@ class MultiScaleSubbandCQTDiscriminator(nn.Module):
         fmap_gs = []
 
         for disc in self.discriminators:
-            y_d_r, fmap_r = disc(y)
-            y_d_g, fmap_g = disc(y_hat)
+            y_d_r, fmap_r = disc(y, is_san=is_san)
+            y_d_g, fmap_g = disc(y_hat, is_san=is_san)
             y_d_rs.append(y_d_r)
             fmap_rs.append(fmap_r)
             y_d_gs.append(y_d_g)
