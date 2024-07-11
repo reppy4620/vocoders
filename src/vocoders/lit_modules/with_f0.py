@@ -49,7 +49,7 @@ class MBWithF0LitModule(NormalLitModule):
 
         _, d_fake, fmap_real, fmap_fake = self.net_d(y, y_hat)
         with torch.autocast(device_type="cuda", enabled=False):
-            loss_gen = self.gen_loss(d_fake)
+            loss_gen = self.gen_loss(d_fake, self.loss_coef.second_disc)
             loss_mel = self.mel_loss(y_hat, y)
             loss_stft = self.stft_loss(y_hat_m, y_m)
             loss_fm = self.fm_loss(fmap_real, fmap_fake)

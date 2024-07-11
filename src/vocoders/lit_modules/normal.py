@@ -53,7 +53,7 @@ class NormalLitModule(LightningModule):
 
         _, d_fake, fmap_real, fmap_fake = self.net_d(y, y_hat)
         with torch.autocast(device_type="cuda", enabled=False):
-            loss_gen = self.gen_loss(d_fake)
+            loss_gen = self.gen_loss(d_fake, self.loss_coef.second_disc)
             loss_mel = self.mel_loss(y_hat, y)
             loss_fm = self.fm_loss(fmap_real, fmap_fake)
             loss_g = (
@@ -110,7 +110,7 @@ class NormalLitModule(LightningModule):
         return [optimizer_g, optimizer_d], [scheduler_g, scheduler_d]
 
 
-class WaveNeXtLitModule(NormalLitModule):
+class VocosLitModule(NormalLitModule):
     def on_train_epoch_end(self):
         pass
 
