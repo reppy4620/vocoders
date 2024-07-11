@@ -43,7 +43,7 @@ Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in def
 Then run the preprocess script
 
 ```sh
-$ cd /path/to/vocoders/exp/00_preprocess/script
+$ cd /path/to/vocoders/exp/00_preprocess
 
 $ ./run.sh
 ```
@@ -54,7 +54,7 @@ Move to the `01_train`directory in prepared experiment directories(e.g. `exp/01_
 
 ```sh
 # e.g. : `01_hifigan`
-$ cd /path/to/vocoders/exp/01_hifigan/01_train/script
+$ cd /path/to/vocoders/exp/01_hifigan/01_train
 
 $ ./run.sh
 ```
@@ -67,7 +67,7 @@ In the process, validation data is synthesized and evaluated.
 
 ```sh
 # e.g. : `01_hifigan`
-$ cd /path/to/vocoders/exp/01_hifigan/02_syn/script
+$ cd /path/to/vocoders/exp/01_hifigan/02_syn
 
 $ ./run.sh
 ```
