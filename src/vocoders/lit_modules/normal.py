@@ -108,3 +108,12 @@ class NormalLitModule(LightningModule):
         scheduler_g = instantiate(self.params.scheduler, optimizer=optimizer_g)
         scheduler_d = instantiate(self.params.scheduler, optimizer=optimizer_d)
         return [optimizer_g, optimizer_d], [scheduler_g, scheduler_d]
+
+
+class WaveNeXtLitModule(NormalLitModule):
+    def on_train_epoch_end(self):
+        pass
+
+    def on_train_batch_end(self, outputs, batch, batch_idx):
+        for sch in self.lr_schedulers():
+            sch.step()
