@@ -1,6 +1,0 @@
-_target_: vocoders.models.discriminators.GeneralDiscriminator
-discriminators:
-  - _target_: vocoders.models.discriminators.sub.MultiPeriodDiscriminator
-    is_san: true
-  - _target_: vocoders.models.discriminators.sub.MultiResolutionDiscriminator
-    is_san: true

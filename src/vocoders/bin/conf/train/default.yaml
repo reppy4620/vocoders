@@ -1,0 +1,15 @@
+seed: 42
+
+num_steps: 1000000
+save_ckpt_interval: 200000
+
+batch_size: 16
+num_workers: 4
+
+loss_coef:
+  second_disc: 1.0
+  mel: 45.0
+  fm: 2.0
+
+trainer_args:
+  precision: 16-mixed

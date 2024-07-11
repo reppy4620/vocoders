@@ -1,0 +1,30 @@
+defaults:
+  - _self_
+  - path: default
+  - mel: default
+  - train: default
+  - dataset: normal
+  - generator: hifigan
+  - discriminator: hifigan
+  - lit_module: normal
+  - optimizer: adamw
+  - scheduler: exponential
+  - loss: default
+  - override hydra/job_logging: disabled
+
+hydra:
+  run:
+    dir: ./
+  output_subdir: null
+
+preprocess:
+  out_dir: ${..path.data_root}
+
+train:
+  out_dir: out
+
+syn:
+  out_dir: out
+  file_path: ${..path.valid_file}
+  ckpt_path: ???
+

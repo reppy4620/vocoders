@@ -1,4 +1,0 @@
-_target_: vocoders.models.discriminators.GeneralDiscriminator
-discriminators:
-  - _target_: vocoders.models.discriminators.sub.MultiPeriodDiscriminator
-  - _target_: vocoders.models.discriminators.sub.MultiScaleDiscriminator

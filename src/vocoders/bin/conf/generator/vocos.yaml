@@ -1,0 +1,12 @@
+_target_: vocoders.models.generators.Vocos
+in_channel: ${..mel.n_mels}
+channel: 512
+h_channel: 1536
+out_channel: 514
+num_layers: 8
+istft:
+  _target_: torchaudio.transforms.InverseSpectrogram
+  n_fft: 512
+  hop_length: 240
+  win_length: 480
+  center: true

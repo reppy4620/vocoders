@@ -1,0 +1,1 @@
+../../01_hifigan/03_plot_loss/run.sh

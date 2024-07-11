@@ -1,9 +1,0 @@
-wav_dir: /path/to/wav_dir
-
-data_root: /path/to/output_dir_for_preprocess
-train_file: ${.data_root}/filelists/train.txt
-valid_file: ${.data_root}/filelists/valid.txt
-
-f0_dir: ${.data_root}/f0
-cf0_dir: ${.data_root}/cf0
-vuv_dir: ${.data_root}/vuv

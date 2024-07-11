@@ -15,10 +15,21 @@ Model list
 - 08_hifigan_f0 : HiFiGAN with NSF module
 - 09_ms_hifigan_f0 : HiFiGAN with NSF module and learnalble PQMF
 - 10_san_ms_hifigan_f0 : HiFiGAN with NSF module and learnable PQMF and utilizing SAN
+- 11_wavenext : WaveNeXt
+- 12_bigvgan_v2_f0 : BigVGAN-v2 with NSF module
 
 # Usage
 
 The directiory for experiment is located in `exp`.
+
+## 0. Install Rye
+
+Please follow the installation instructions [here](https://rye.astral.sh/guide/installation/).
+
+After that, set up the project by running the following command:
+```
+$ rye sync
+```
 
 ## 1. Preprocessing (00_preprocess)
 
