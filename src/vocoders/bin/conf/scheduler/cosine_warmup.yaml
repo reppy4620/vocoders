@@ -1,0 +1,3 @@
+_target_: vocoders.schedulers.CosineWithWarmupScheduler
+num_warmup_steps: 500
+num_training_steps: ${..train.num_steps}

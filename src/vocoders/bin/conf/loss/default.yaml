@@ -1,0 +1,10 @@
+disc: vocoders.losses.gan.discriminator_loss
+
+gen:
+  gan: vocoders.losses.gan.generator_loss
+  mel:
+    _target_: vocoders.losses.mel.NormalMelLoss
+    to_mel: ${....mel}
+  fm: vocoders.losses.gan.feature_matching_loss
+  stft:
+    _target_: vocoders.losses.stft.MultiResolutionSTFTLoss
