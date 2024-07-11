@@ -1,9 +1,9 @@
 [project]
 name = "vocoders"
 version = "0.1.0"
-description = "Add your description here"
+description = "My vocoder experiments"
 authors = [
-    { name = "reppy4620", email = "ilikeniku@icloud.com" }
+    { name = "reppy4620", email = "reppy4620@gmail.com" }
 ]
 dependencies = [
     "lightning>=2.3.3",
