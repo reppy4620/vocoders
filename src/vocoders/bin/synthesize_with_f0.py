@@ -21,7 +21,7 @@ def main(cfg):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lit_module = (
-        get_class(cfg.lit_module)
+        get_class(cfg.lit_module._target_)
         .load_from_checkpoint(cfg.syn.ckpt_path, params=cfg)
         .to(device)
         .eval()

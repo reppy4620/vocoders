@@ -16,8 +16,8 @@ Model list
 - 09_ms_hifigan_f0 : HiFiGAN with NSF module and learnalble PQMF
 - 10_san_ms_hifigan_f0 : HiFiGAN with NSF module and learnable PQMF and utilizing SAN
 - 11_wavenext : WaveNeXt (not stable)
-- 12_bigvgan_v2_f0 : BigVGAN-v2 with NSF module
-- 13_bigvsan_v2_f0 : BigVSAN with BigVGAN-v2 setup and NSF module (not stable)
+- 12_bigvgan_v2_f0 : BigVGAN-v2(same generator as v1 but the loss and discriminator are different) with NSF module
+- 13_bigvsan_v2_f0 : BigVSAN with BigVGAN-v2 setup and NSF module
 
 # Usage
 
@@ -37,7 +37,7 @@ $ rye sync
 1. Split dat to train/valid
 2. Extract F0 with Harvest
 
-Default config is located in `vocoders/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.  
+Default config is located in `src/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.  
 Current system supports single-speaker or universal vocoder, and it is assumed that the audio files to be used are placed in the `wav_dir`.   
 Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.
 
