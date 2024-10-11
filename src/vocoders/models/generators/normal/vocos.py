@@ -1,5 +1,5 @@
-import torch
 import torch.nn as nn
+
 from vocoders.layers.convnext import ConvNeXtLayer
 
 

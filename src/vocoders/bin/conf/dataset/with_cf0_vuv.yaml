@@ -1,0 +1,17 @@
+train:
+  _target_: vocoders.datasets.WithCf0VuvDataset
+  file_path: ${...path.train_file}
+  wav_dir: ${...path.wav_dir}
+  cf0_dir: ${...path.cf0_dir}
+  vuv_dir: ${...path.vuv_dir}
+  frame_segment_size: 32
+  hop_length: ${...mel.hop_length}
+
+valid:
+  _target_: vocoders.datasets.WithCf0VuvDataset
+  file_path: ${...path.valid_file}
+  wav_dir: ${...path.wav_dir}
+  cf0_dir: ${...path.cf0_dir}
+  vuv_dir: ${...path.vuv_dir}
+  frame_segment_size: 32
+  hop_length: ${...mel.hop_length}

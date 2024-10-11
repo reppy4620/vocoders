@@ -3,9 +3,14 @@ from pathlib import Path
 import hydra
 from hydra.utils import instantiate
 from lightning import Trainer, seed_everything
-from lightning.pytorch.callbacks import ModelCheckpoint
-from lightning.pytorch.loggers import CSVLogger, TensorBoardLogger
+from lightning.pytorch.callbacks import (
+    ModelCheckpoint,
+    RichModelSummary,
+    RichProgressBar,
+)
+from lightning.pytorch.loggers import CSVLogger, TensorBoardLogger, WandbLogger
 from omegaconf import OmegaConf
+
 from vocoders.utils.logging import logger
 
 
@@ -30,6 +35,9 @@ def main(cfg):
 
     csv_logger = CSVLogger(save_dir=out_dir, name="logs/csv")
     tb_logger = TensorBoardLogger(save_dir=out_dir, name="logs/tensorboard")
+    wandb_logger = WandbLogger(
+        save_dir=out_dir, name=out_dir.absolute().parent.parent.name, project="vocoders"
+    )
     ckpt_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
         every_n_train_steps=cfg.train.save_ckpt_interval,
@@ -39,11 +47,13 @@ def main(cfg):
     ckpt_path = ckpt_dir / "last.ckpt" if (ckpt_dir / "last.ckpt").exists() else None
 
     trainer = Trainer(
-        logger=[csv_logger, tb_logger],
+        logger=[csv_logger, tb_logger, wandb_logger],
         max_steps=cfg.train.num_steps,
-        callbacks=[ckpt_callback],
+        callbacks=[ckpt_callback, RichModelSummary(), RichProgressBar()],
         **cfg.train.trainer_args,
     )
+    lit_module.trainer = trainer
+    logger.info("Start training...")
     trainer.fit(
         model=lit_module,
         ckpt_path=ckpt_path,

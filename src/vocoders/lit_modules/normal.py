@@ -2,6 +2,7 @@ import torch
 from hydra.utils import get_method, instantiate
 from lightning import LightningModule
 from torch.utils.data import DataLoader
+
 from vocoders.utils.logging import logger
 
 
@@ -77,6 +78,10 @@ class NormalLitModule(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         self._handle_batch(batch, train=False)
+        logger.info(
+            "Valid: "
+            + ", ".join(f"{k}={v:.3f}" for k, v in self.trainer.logged_metrics.items())
+        )
 
     def train_dataloader(self):
         ds = instantiate(self.params.dataset.train)

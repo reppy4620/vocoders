@@ -197,3 +197,28 @@ class SourceModuleHnNSF(torch.nn.Module):
         # source for noise branch, in the same shape as uv
         noise = torch.randn_like(uv) * self.sine_amp / 3
         return sine_merge, noise, uv
+
+
+class SignalGenerator(torch.nn.Module):
+    def __init__(self, sample_rate, hop_length, sine_amp=1.0, noise_std=1.0):
+        super(SignalGenerator, self).__init__()
+        self.sine_amp = sine_amp
+        self.noise_std = noise_std
+        self.sample_rate = sample_rate
+        self.pooling = torch.nn.AvgPool1d(hop_length, 1, padding=hop_length // 2)
+
+    def _f02sine(self, f0_values):
+        rad_values = f0_values / self.sample_rate
+        rand_ini = torch.rand(
+            f0_values.shape[0], f0_values.shape[1], device=f0_values.device
+        )
+        rad_values[:, :, 0] = rad_values[:, :, 0] + rand_ini
+        sines = torch.sin(torch.cumsum(rad_values, dim=2) * 2 * np.pi)
+        return sines
+
+    def forward(self, cf0, vuv):
+        with torch.no_grad():
+            sine_waves = self._f02sine(cf0) * self.sine_amp
+            vuv_smoothed = self.pooling(vuv)[:, :, :-1]
+            noise = self.noise_std * torch.randn_like(sine_waves)
+            return sine_waves, vuv_smoothed, noise

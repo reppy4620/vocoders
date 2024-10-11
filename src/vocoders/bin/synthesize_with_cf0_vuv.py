@@ -17,6 +17,8 @@ def main(cfg):
     out_dir = Path(cfg.syn.out_dir)
     [(out_dir / s).mkdir(parents=True, exist_ok=True) for s in ["wav"]]
     wav_dir = Path(cfg.path.wav_dir)
+    cf0_dir = Path(cfg.path.cf0_dir)
+    vuv_dir = Path(cfg.path.vuv_dir)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lit_module = (
@@ -46,10 +48,17 @@ def main(cfg):
         assert sr == cfg.mel.sample_rate
         wav = wav.to(device)
         mel = to_mel(wav)
+        cf0 = torch.FloatTensor(np.load(cf0_dir / f"{bname}.npy"))[
+            None, : mel.shape[-1]
+        ].to(device)
+        vuv = torch.FloatTensor(np.load(vuv_dir / f"{bname}.npy"))[
+            None, : mel.shape[-1]
+        ].to(device)
+        assert mel.shape[-1] == cf0.shape[-1] == vuv.shape[-1]
         torch.cuda.synchronize()
         # predict wav from mel
         s = time.time()
-        o = lit_module(mel)
+        o = lit_module(mel, cf0, vuv)
         torch.cuda.synchronize()
         rtf = (time.time() - s) / o.shape[-1] * sr
         rtf_list.append(rtf)
