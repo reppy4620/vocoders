@@ -41,7 +41,8 @@ $ rye sync
 
 Default config is located in `src/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.  
 Current system supports single-speaker or universal vocoder, and it is assumed that the audio files to be used are placed in the `wav_dir`.   
-Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.
+Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.  
+If you wanna train your own dataset, change the parameters of `src/vocoders/bin/conf/mel/default.yaml` to your settings.
 
 Then run the preprocess script
 
