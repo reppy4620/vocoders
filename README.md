@@ -18,6 +18,8 @@ Model list
 - 11_wavenext : WaveNeXt (not stable)
 - 12_bigvgan_v2_f0 : BigVGAN-v2(same generator as v1 but the loss and discriminator are different) with NSF module
 - 13_bigvsan_v2_f0 : BigVSAN with BigVGAN-v2 setup and NSF module
+- 14_bigvsan_f0 : BigVSAN with BigVGAN setup and NSF module
+- 15_bigvgan_f0_more : BigVGAN but more channels
 
 # Usage
 
