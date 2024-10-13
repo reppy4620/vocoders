@@ -78,6 +78,8 @@ class NormalLitModule(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         self._handle_batch(batch, train=False)
+
+    def on_validation_epoch_end(self):
         logger.info(
             "Valid: "
             + ", ".join(f"{k}={v:.3f}" for k, v in self.trainer.logged_metrics.items())

@@ -11,3 +11,4 @@ wheels/
 
 **/out*
 backup
+./test.py
