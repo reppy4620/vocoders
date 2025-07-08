@@ -2,7 +2,7 @@
 
 bin_dir=../../../src/vocoders/bin
 
-HYDRA_FULL_ERROR=1 python $bin_dir/synthesize_with_cf0_vuv.py \
+HYDRA_FULL_ERROR=1 uv run $bin_dir/synthesize_with_cf0_vuv.py \
     dataset=with_cf0_vuv \
     generator=hifi_vocoder \
     discriminator=bigvgan \

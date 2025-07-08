@@ -5,6 +5,6 @@ out_dir=../out
 
 bin_dir=../../../src/vocoders/bin
 
-python $bin_dir/plot_loss.py \
+uv run $bin_dir/plot_loss.py \
     --loss_file $loss_file \
     --out_dir $out_dir

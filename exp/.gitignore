@@ -1,3 +1,4 @@
 mklink.sh
 compare
 test.py
+*.wav

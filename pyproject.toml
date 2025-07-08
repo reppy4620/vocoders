@@ -9,7 +9,6 @@ dependencies = [
     "lightning>=2.3.3",
     "torchaudio>=2.3.1",
     "joblib>=1.4.2",
-    "pyworld>=0.3.4",
     "soundfile>=0.12.1",
     "pesq>=0.0.4",
     "hydra-core>=1.3.2",
@@ -22,6 +21,7 @@ dependencies = [
     "librosa>=0.10.2.post1",
     "rich>=13.9.2",
     "wandb>=0.18.3",
+    "pyworld-prebuilt>=0.3.5.post1",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

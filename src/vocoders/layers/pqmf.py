@@ -161,13 +161,17 @@ class LearnablePQMF(PQMF):
 
 
 class ResidualPQMF(torch.nn.Module):
-    def __init__(self, n=2, subbands=4, taps=62, cutoff_ratio=0.15, beta=9.0):
+    def __init__(
+        self, pqmf_class=PQMF, subbands=[4, 4], taps=62, cutoff_ratio=0.15, beta=9.0
+    ):
         super().__init__()
         self.subbands = subbands
         self.pqmfs = torch.nn.ModuleList()
-        for _ in range(n):
+        for subband in subbands:
             self.pqmfs += [
-                PQMF(subbands=subbands, taps=taps, cutoff_ratio=cutoff_ratio, beta=beta)
+                pqmf_class(
+                    subbands=subband, taps=taps, cutoff_ratio=cutoff_ratio, beta=beta
+                )
             ]
 
     def analysis(self, x):

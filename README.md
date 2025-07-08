@@ -25,13 +25,13 @@ Model list
 
 The directiory for experiment is located in `exp`.
 
-## 0. Install Rye
+## 0. Install uv
 
-Please follow the installation instructions [here](https://rye.astral.sh/guide/installation/).
+Please follow the installation instructions [here](https://docs.astral.sh/uv/getting-started/installation/).
 
 After that, set up the project by running the following command:
 ```
-$ rye sync
+$ uv sync
 ```
 
 ## 1. Preprocessing (00_preprocess)
@@ -39,9 +39,9 @@ $ rye sync
 1. Split dat to train/valid
 2. Extract F0 with Harvest
 
-Default config is located in `src/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.  
-Current system supports single-speaker or universal vocoder, and it is assumed that the audio files to be used are placed in the `wav_dir`.   
-Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.  
+Default config is located in `src/vocoders/bin/conf/path/dummy.yaml`, so if you run with original dataset, please change the path config file.
+Current system supports single-speaker or universal vocoder, and it is assumed that the audio files to be used are placed in the `wav_dir`.
+Additionally, the audio files are expected to be 1 channel, 16-bit, 24kHz in default settings.
 If you wanna train your own dataset, change the parameters of `src/vocoders/bin/conf/mel/default.yaml` to your settings.
 
 Then run the preprocess script
@@ -65,8 +65,8 @@ $ ./run.sh
 
 ## 3. Synthesis
 
-Move to the `02_syn` directory and execute the following command.  
-The default checkpoint file is set as `01_train/out/ckpt/last.ckpt`.  
+Move to the `02_syn` directory and execute the following command.
+The default checkpoint file is set as `01_train/out/ckpt/last.ckpt`.
 In the process, validation data is synthesized and evaluated.
 
 ```sh
