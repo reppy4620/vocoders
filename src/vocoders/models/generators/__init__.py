@@ -8,3 +8,4 @@ from .normal import BigVGAN  # noqa
 from .normal import HiFiGAN  # noqa
 from .normal import Vocos  # noqa
 from .normal import WaveNeXt, WaveNeXtOverlap  # noqa
+from .normal import BitHiFiGAN  # noqa

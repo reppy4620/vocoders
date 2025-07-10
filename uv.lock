@@ -2128,7 +2128,7 @@ name = "triton"
 version = "3.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "setuptools", marker = "sys_platform == 'linux'" },
+    { name = "setuptools" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/21/2f/3e56ea7b58f80ff68899b1dbe810ff257c9d177d288c6b0f55bf2fe4eb50/triton-3.3.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b31e3aa26f8cb3cc5bf4e187bf737cbacf17311e1112b781d4a059353dfd731b", size = 155689937, upload-time = "2025-05-29T23:39:44.182Z" },
@@ -2196,6 +2196,7 @@ dependencies = [
     { name = "soundfile" },
     { name = "tensorboard" },
     { name = "torchaudio" },
+    { name = "triton" },
     { name = "wandb" },
 ]
 
@@ -2216,6 +2217,7 @@ requires-dist = [
     { name = "soundfile", specifier = ">=0.12.1" },
     { name = "tensorboard", specifier = ">=2.17.0" },
     { name = "torchaudio", specifier = ">=2.3.1" },
+    { name = "triton", specifier = ">=3.3.1" },
     { name = "wandb", specifier = ">=0.18.3" },
 ]
 

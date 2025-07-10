@@ -22,6 +22,7 @@ dependencies = [
     "rich>=13.9.2",
     "wandb>=0.18.3",
     "pyworld-prebuilt>=0.3.5.post1",
+    "triton>=3.3.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

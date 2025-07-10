@@ -19,7 +19,7 @@ round_ste = StraightThroughEstimator.apply
 eps = 1e-8
 
 
-class QuantizedConv1d(nn.Module):
+class QuantizedConv1d(nn.Conv1d):
     def __init__(
         self,
         in_channels,
@@ -30,9 +30,7 @@ class QuantizedConv1d(nn.Module):
         dilation=1,
         groups=1,
     ):
-        super().__init__()
-        self.layer_norm = nn.LayerNorm(in_channels)
-        self.conv = nn.Conv1d(
+        super().__init__(
             in_channels,
             out_channels,
             kernel_size,
@@ -42,13 +40,14 @@ class QuantizedConv1d(nn.Module):
             groups=groups,
             bias=False,
         )
+        self.layer_norm = nn.LayerNorm(in_channels)
 
         self.p_precision = 8
         self.Qp = 2 ** (self.p_precision - 1)  # 128.0
 
     def forward(self, x):
         x = self.layer_norm(x.transpose(1, 2)).transpose(1, 2)
-        w = self.conv.weight
+        w = self.weight
         beta = torch.mean(torch.abs(w))
         w_quantized = round_ste(torch.clamp(w / (beta + eps), -1, 1))
         gamma = torch.max(torch.abs(x))
@@ -57,16 +56,16 @@ class QuantizedConv1d(nn.Module):
         y_quantized = F.conv1d(
             x_quantized,
             w_quantized,
-            stride=self.conv.stride,
-            padding=self.conv.padding,
-            dilation=self.conv.dilation,
-            groups=self.conv.groups,
+            stride=self.stride,
+            padding=self.padding,
+            dilation=self.dilation,
+            groups=self.groups,
         )
         y = (y_quantized * beta * gamma) / self.Qp
         return y
 
 
-class QuantizedConvTranspose1d(nn.Module):
+class QuantizedConvTranspose1d(nn.ConvTranspose1d):
     def __init__(
         self,
         in_channels,
@@ -78,7 +77,17 @@ class QuantizedConvTranspose1d(nn.Module):
         groups=1,
         dilation=1,
     ):
-        super().__init__()
+        super().__init__(
+            in_channels,
+            out_channels,
+            kernel_size,
+            stride=stride,
+            padding=padding,
+            output_padding=output_padding,
+            groups=groups,
+            bias=False,
+            dilation=dilation,
+        )
 
         self.conv_transpose = nn.ConvTranspose1d(
             in_channels,
