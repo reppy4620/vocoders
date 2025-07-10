@@ -7,10 +7,10 @@ from vocoders.utils.const import LRELU_SLOPE
 
 
 class MRFLayer(nn.Module):
-    def __init__(self, channels, kernel_size, dilation):
+    def __init__(self, channels, kernel_size, dilation, conv_layer):
         super().__init__()
         self.conv1 = weight_norm(
-            nn.Conv1d(
+            conv_layer(
                 channels,
                 channels,
                 kernel_size,
@@ -19,7 +19,7 @@ class MRFLayer(nn.Module):
             )
         )
         self.conv2 = weight_norm(
-            nn.Conv1d(
+            conv_layer(
                 channels, channels, kernel_size, padding=kernel_size // 2, dilation=1
             )
         )
@@ -37,11 +37,11 @@ class MRFLayer(nn.Module):
 
 
 class MRFBlock(nn.Module):
-    def __init__(self, channels, kernel_size, dilations):
+    def __init__(self, channels, kernel_size, dilations, conv_layer=nn.Conv1d):
         super().__init__()
         self.layers = nn.ModuleList()
         for dilation in dilations:
-            self.layers.append(MRFLayer(channels, kernel_size, dilation))
+            self.layers.append(MRFLayer(channels, kernel_size, dilation, conv_layer))
 
     def forward(self, x):
         for layer in self.layers:

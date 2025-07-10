@@ -25,7 +25,7 @@ class WaveNeXt(nn.Module):
             x = layer(x)
         x = self.norm_last(x.transpose(1, 2))
         o = self.out_linear(x)
-        o = self.fc(o).transpose(1, 2)
+        o = self.fc(o)
         o = o.reshape(o.size(0), 1, -1).clip(-1, 1)
         return o
 
