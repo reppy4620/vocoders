@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import remove_weight_norm
 from torch.nn.utils.parametrizations import weight_norm
+from torch.nn.utils.parametrize import remove_parametrizations
 
 from vocoders.utils.const import LRELU_SLOPE
 
@@ -32,8 +33,12 @@ class MRFLayer(nn.Module):
         return x + y
 
     def remove_weight_norm(self):
-        remove_weight_norm(self.conv1)
-        remove_weight_norm(self.conv2)
+        try:
+            remove_weight_norm(self.conv1)
+            remove_weight_norm(self.conv2)
+        except ValueError:
+            remove_parametrizations(self.conv1, "weight")
+            remove_parametrizations(self.conv2, "weight")
 
 
 class MRFBlock(nn.Module):
@@ -53,7 +58,7 @@ class MRFBlock(nn.Module):
             layer.remove_weight_norm()
 
 
-class HiFiVocLayer(nn.Module):
+class PReLUMRFLayer(nn.Module):
     def __init__(self, channels, kernel_size, dilation):
         super().__init__()
         self.conv1 = weight_norm(
@@ -85,12 +90,12 @@ class HiFiVocLayer(nn.Module):
         remove_weight_norm(self.conv2)
 
 
-class HiFiVocBlock(nn.Module):
+class PReLUMRFBlock(nn.Module):
     def __init__(self, channels, kernel_size, dilations):
         super().__init__()
         self.layers = nn.ModuleList()
         for dilation in dilations:
-            self.layers.append(HiFiVocLayer(channels, kernel_size, dilation))
+            self.layers.append(PReLUMRFLayer(channels, kernel_size, dilation))
 
     def forward(self, x):
         for layer in self.layers:

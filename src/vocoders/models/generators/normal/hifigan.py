@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import remove_weight_norm
 from torch.nn.utils.parametrizations import weight_norm
+from torch.nn.utils.parametrize import remove_parametrizations
 
 from vocoders.layers.mrf import MRFBlock
 from vocoders.layers.quantization import QuantizedConv1d, QuantizedConvTranspose1d
@@ -148,9 +149,10 @@ class BitHiFiGAN(nn.Module):
         return x
 
     def remove_weight_norm(self):
-        remove_weight_norm(self.conv_pre)
+        self.conv_pre.remove_weight_norm()
         for up in self.upsamples:
-            remove_weight_norm(up)
+            up.remove_weight_norm()
         for mrf in self.mrfs:
-            mrf.remove_weight_norm()
-        remove_weight_norm(self.conv_post)
+            for block in mrf:
+                block.remove_weight_norm()
+        remove_parametrizations(self.conv_post, "weight")

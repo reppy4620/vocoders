@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.utils.parametrize import remove_parametrizations
 
 
 class StraightThroughEstimator(torch.autograd.Function):
@@ -64,6 +65,9 @@ class QuantizedConv1d(nn.Conv1d):
         y = (y_quantized * beta * gamma) / self.Qp
         return y
 
+    def remove_weight_norm(self):
+        remove_parametrizations(self, "weight")
+
 
 class QuantizedConvTranspose1d(nn.ConvTranspose1d):
     def __init__(
@@ -126,3 +130,6 @@ class QuantizedConvTranspose1d(nn.ConvTranspose1d):
         y = (y_quantized * beta * gamma) / self.Qp
 
         return y
+
+    def remove_weight_norm(self):
+        remove_parametrizations(self, "weight")

@@ -23,6 +23,7 @@ dependencies = [
     "wandb>=0.18.3",
     "pyworld-prebuilt>=0.3.5.post1",
     "triton>=3.3.1",
+    "ipywidgets>=8.1.7",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
@@ -40,3 +41,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vocoders"]
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.4.4",
+]

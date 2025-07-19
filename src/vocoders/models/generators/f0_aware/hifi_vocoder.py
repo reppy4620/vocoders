@@ -4,11 +4,11 @@ import torch.nn as nn
 from torch.nn.utils import remove_weight_norm
 from torch.nn.utils.parametrizations import weight_norm
 
-from vocoders.layers.mrf import HiFiVocBlock
+from vocoders.layers.mrf import PReLUMRFBlock
 from vocoders.layers.nsf import SignalGenerator
 
 
-class HiFiVocoder(nn.Module):
+class PReLUVocoder(nn.Module):
     def __init__(
         self,
         in_channel,
@@ -54,7 +54,7 @@ class HiFiVocoder(nn.Module):
             self.mrfs.append(
                 nn.ModuleList(
                     [
-                        HiFiVocBlock(channel, kernel_size=k, dilations=ds)
+                        PReLUMRFBlock(channel, kernel_size=k, dilations=ds)
                         for k, ds in zip(resblock_kernel_sizes, resblock_dilations)
                     ]
                 )
