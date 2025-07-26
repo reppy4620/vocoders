@@ -30,6 +30,7 @@ class QuantizedConv1d(nn.Conv1d):
         padding=0,
         dilation=1,
         groups=1,
+        elementwise_affine=False,
     ):
         super().__init__(
             in_channels,
@@ -41,13 +42,16 @@ class QuantizedConv1d(nn.Conv1d):
             groups=groups,
             bias=False,
         )
-        self.layer_norm = nn.LayerNorm(in_channels)
+        # self.layer_norm = nn.LayerNorm(
+        #     in_channels, elementwise_affine=elementwise_affine
+        # )
 
         self.p_precision = 8
         self.Qp = 2 ** (self.p_precision - 1)  # 128.0
 
     def forward(self, x):
-        x = self.layer_norm(x.transpose(1, 2)).transpose(1, 2)
+        # x = self.layer_norm(x.transpose(1, 2)).transpose(1, 2)
+        x = (x - x.mean(dim=1, keepdim=True)) / (x.std(dim=1, keepdim=True) + eps)
         w = self.weight
         beta = torch.mean(torch.abs(w))
         w_quantized = round_ste(torch.clamp(w / (beta + eps), -1, 1))
@@ -80,6 +84,7 @@ class QuantizedConvTranspose1d(nn.ConvTranspose1d):
         output_padding=0,
         groups=1,
         dilation=1,
+        elementwise_affine=False,
     ):
         super().__init__(
             in_channels,
@@ -93,26 +98,17 @@ class QuantizedConvTranspose1d(nn.ConvTranspose1d):
             dilation=dilation,
         )
 
-        self.conv_transpose = nn.ConvTranspose1d(
-            in_channels,
-            out_channels,
-            kernel_size,
-            stride=stride,
-            padding=padding,
-            output_padding=output_padding,
-            groups=groups,
-            bias=False,
-            dilation=dilation,
+        self.layer_norm = nn.LayerNorm(
+            in_channels, elementwise_affine=elementwise_affine
         )
-
-        self.layer_norm = nn.LayerNorm(in_channels)
 
         self.p_precision = 8
         self.Qp = 2 ** (self.p_precision - 1)
 
     def forward(self, x):
-        x_norm = self.layer_norm(x.transpose(1, 2)).transpose(1, 2)
-        w = self.conv_transpose.weight
+        # x_norm = self.layer_norm(x.transpose(1, 2)).transpose(1, 2)
+        x_norm = (x - x.mean(dim=1, keepdim=True)) / (x.std(dim=1, keepdim=True) + eps)
+        w = self.weight
         beta = torch.mean(torch.abs(w))
         w_quantized = round_ste(torch.clamp(w / (beta + eps), -1, 1))
         gamma = torch.max(torch.abs(x_norm))
@@ -121,11 +117,11 @@ class QuantizedConvTranspose1d(nn.ConvTranspose1d):
         y_quantized = F.conv_transpose1d(
             x_quantized,
             w_quantized,
-            stride=self.conv_transpose.stride,
-            padding=self.conv_transpose.padding,
-            output_padding=self.conv_transpose.output_padding,
-            groups=self.conv_transpose.groups,
-            dilation=self.conv_transpose.dilation,
+            stride=self.stride,
+            padding=self.padding,
+            output_padding=self.output_padding,
+            groups=self.groups,
+            dilation=self.dilation,
         )
         y = (y_quantized * beta * gamma) / self.Qp
 

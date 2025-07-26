@@ -131,7 +131,7 @@ class BitHiFiGAN(nn.Module):
                 )
             )
         self.conv_post = weight_norm(
-            nn.Conv1d(channel, 1, kernel_size=7, stride=1, padding=3)
+            nn.Conv1d(channel, 1, kernel_size=7, stride=1, padding=3, bias=False)
         )
 
     def forward(self, x):
